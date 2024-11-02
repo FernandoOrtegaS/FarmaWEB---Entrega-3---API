@@ -1,48 +1,49 @@
 import express from 'express';
-import sql from '../db/neon.js';
-import { authMiddleware, isAdminMiddleware } from '../middlewares/auth.js';
+import sql from '../db/db.js';
+import { authMiddleware, isAdminMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.get('/productos', async (req, res) => {
+// Lista todos los productos
+router.get('/', async (req, res) => {
   const lista = await sql('SELECT * FROM producto');
-  res.render('product', { lista });
+  res.json(lista);
 });
 
-router.get('/agregar/producto', authMiddleware, (req, res) => {
-  res.render('agregar_producto');
-});
-
-router.post('/agregar', authMiddleware, isAdminMiddleware, async (req, res) => {
-  const { nombre, precio, imagen } = req.body;
-  const query = 'INSERT INTO producto(nombre, precio, imagen) VALUES ($1, $2, $3)';
-  await sql(query, [nombre, precio, imagen]);
-  res.redirect('/');
-});
-
-router.get('/editar/producto/:id', authMiddleware, isAdminMiddleware, async (req, res) => {
-  const { id } = req.params;
-  const results = await sql('SELECT * FROM producto WHERE id = $1', [id]);
-  res.render('editar_producto', results[0]);
-});
-
-router.post('/editar/producto/:id', authMiddleware, isAdminMiddleware, async (req, res) => {
-  const { id } = req.params;
-  const { nombre, precio, imagen } = req.body;
-  await sql('UPDATE producto SET nombre = $1, precio = $2, imagen = $3 WHERE id = $4', [nombre, precio, imagen, id]);
-  res.redirect('/admin');
-});
-
-router.post('/eliminar/producto/:id', authMiddleware, isAdminMiddleware, async (req, res) => {
-  const { id } = req.params;
-  try {
-    await sql('DELETE FROM producto WHERE id = $1', [id]);
-    res.redirect('/admin');
-  } catch (error) {
-    console.error('Error eliminando producto:', error);
-    res.status(500).send('Error eliminando el producto');
+// Obtiene información de un producto específico
+router.get('/:id', async (req, res) => {
+  const id = req.params.id;
+  const producto = await sql('SELECT * FROM producto WHERE id = $1', [id]);
+  
+  if (producto.length > 0) {
+    res.json(producto[0]);
+  } else {
+    res.status(404).json({ message: 'Producto no encontrado' });
   }
 });
 
+// Agrega un nuevo producto (solo administrador)
+router.post('/', authMiddleware, isAdminMiddleware, async (req, res) => {
+  const { nombre, precio, imagen } = req.body;
+  await sql('INSERT INTO producto(nombre, precio, imagen) VALUES ($1, $2, $3)', [nombre, precio, imagen]);
+  res.json({ message: 'Producto agregado exitosamente' });
+});
+
+// Modifica un producto existente (solo administrador)
+router.put('/:id', authMiddleware, isAdminMiddleware, async (req, res) => {
+  const id = req.params.id;
+  const { nombre, precio, imagen } = req.body;
+  await sql('UPDATE producto SET nombre = $1, precio = $2, imagen = $3 WHERE id = $4', [nombre, precio, imagen, id]);
+  res.json({ message: 'Producto modificado exitosamente' });
+});
+
+// Elimina un producto (solo administrador)
+router.delete('/:id', authMiddleware, isAdminMiddleware, async (req, res) => {
+  const id = req.params.id;
+  await sql('DELETE FROM producto WHERE id = $1', [id]);
+  res.json({ message: 'Producto eliminado exitosamente' });
+});
+
 export default router;
+
 

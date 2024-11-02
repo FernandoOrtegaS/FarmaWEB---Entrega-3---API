@@ -1,38 +1,49 @@
 import express from 'express';
-import sql from '../db/neon.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { authMiddleware } from '../middlewares/auth.js';
+import sql from '../db/db.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
-const keyword = 'buenas';
-const cookieNameAuth = "777";
 
-router.get('/registro', (req, res) => {
-  res.render('registro');
-});
-
-router.post('/signup', async (req, res) => {
-  const { nombre, mail, password } = req.body;
-  const hash = bcrypt.hashSync(password, 5);
-  const query = 'INSERT INTO usuario(nombre, mail, password) VALUES ($1, $2, $3) RETURNING id';
-
-  try {
-    const results = await sql(query, [nombre, mail, hash]);
-    const id = results[0].id;
-    const token = jwt.sign({ id, exp: Math.floor(Date.now() / 1000) + 45 * 60 }, keyword);
-    res.cookie(cookieNameAuth, token, { maxAge: 45 * 60 * 1000 });
-    res.redirect('/perfil');
-  } catch {
-    res.render('yaRegistrado');
-  }
-});
-
-router.get('/perfil', authMiddleware, async (req, res) => {
+// Muestra el perfil del usuario
+router.get('/profile', authMiddleware, async (req, res) => {
   const id_usuario = req.usuario.id;
   const query = 'SELECT nombre, dinero, mail FROM usuario WHERE id = $1';
   const results = await sql(query, [id_usuario]);
-  res.render('perfil', results[0]);
+  
+  if (results.length > 0) {
+    res.json(results[0]);
+  } else {
+    res.status(404).json({ message: 'Usuario no encontrado' });
+  }
+});
+
+// Agrega dinero a la cuenta del usuario
+router.post('/agregar/dinero', authMiddleware, async (req, res) => {
+  const id = req.usuario.id;
+  const dinero = parseFloat(req.body.dinero);
+  const result = await sql('SELECT dinero FROM usuario WHERE id = $1', [id]);
+  const dineroActual = parseFloat(result[0].dinero) || 0; 
+  const nuevoSaldo = dinero + dineroActual;
+
+  await sql('UPDATE usuario SET dinero = $1 WHERE id = $2', [nuevoSaldo, id]);
+  res.json({ message: 'Dinero agregado exitosamente', nuevoSaldo });
+});
+
+// Muestra el historial de compras del usuario
+router.get('/historial', authMiddleware, async (req, res) => {
+  const id_usuario = req.usuario.id;
+  const query = `
+    SELECT ventas.id, ventas.cantidad, ventas.fecha
+    FROM ventas
+    WHERE ventas.id_usuario = $1
+  `;
+  const results = await sql(query, [id_usuario]);
+
+  results.forEach(venta => {
+    venta.fecha = new Date(venta.fecha).toLocaleDateString();
+  });
+
+  res.json({ historial: results });
 });
 
 export default router;
