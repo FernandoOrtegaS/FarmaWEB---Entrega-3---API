@@ -4,7 +4,7 @@ import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Muestra los productos en el carrito
+
 router.get('/', authMiddleware, async (req, res) => {
   const id_usuario = req.usuario.id;
   const result = await sql('SELECT dinero FROM usuario WHERE id = $1', [id_usuario]);

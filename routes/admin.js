@@ -4,7 +4,7 @@ import { authMiddleware, isAdminMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Obtiene el total ganado por la tienda
+
 router.get('/totalEarned', authMiddleware, isAdminMiddleware, async (req, res) => {
   try {
     const result = await sql('SELECT SUM(cantidad) AS total_earned FROM ventas');
@@ -16,7 +16,7 @@ router.get('/totalEarned', authMiddleware, isAdminMiddleware, async (req, res) =
   }
 });
 
-// Agrega un nuevo producto (solo administrador)
+
 router.post('/products', authMiddleware, isAdminMiddleware, async (req, res) => {
   const { nombre, precio, imagen } = req.body;
   try {
@@ -28,7 +28,7 @@ router.post('/products', authMiddleware, isAdminMiddleware, async (req, res) => 
   }
 });
 
-// Modifica un producto existente (solo administrador)
+
 router.put('/products/:id', authMiddleware, isAdminMiddleware, async (req, res) => {
   const id = req.params.id;
   const { nombre, precio, imagen } = req.body;
@@ -41,7 +41,7 @@ router.put('/products/:id', authMiddleware, isAdminMiddleware, async (req, res) 
   }
 });
 
-// Elimina un producto (solo administrador)
+
 router.delete('/products/:id', authMiddleware, isAdminMiddleware, async (req, res) => {
   const id = req.params.id;
   try {

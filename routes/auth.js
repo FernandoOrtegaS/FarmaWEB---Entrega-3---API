@@ -7,7 +7,7 @@ const router = express.Router();
 const keyword = 'ktal';
 const cookieNameAuth = "jaja";
 
-// Ruta de inicio de sesión
+
 router.post('/login', async (req, res) => {
   const { mail, password } = req.body;
 
@@ -30,7 +30,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Ruta de registro
+
 router.post('/signup', async (req, res) => {
   const { nombre, mail, password } = req.body;
 
@@ -49,7 +49,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// Ruta de cierre de sesión
+
 router.post('/logout', (req, res) => {
   res.cookie(cookieNameAuth, '', { maxAge: 1 });
   res.json({ message: 'Cierre de sesión exitoso' });

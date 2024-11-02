@@ -10,24 +10,24 @@ import userRoutes from './routes/user.js';
 
 const app = express();
 
-// Middleware para manejar JSON, formularios y cookies
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// Configuración de handlebars como motor de vistas
+
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
 app.set('views', './views');
 
-// Rutas de la API
-app.use('/auth', authRoutes);              // Rutas de autenticación
-app.use('/admin', adminRoutes);             // Rutas de administrador
-app.use('/products', productRoutes);        // Rutas de productos
-app.use('/shoppingcart', cartRoutes);       // Rutas de carrito de compras
-app.use('/purchase', purchaseRoutes);       // Rutas de compras
+
+app.use('/auth', authRoutes);             
+app.use('/admin', adminRoutes);             
+app.use('/products', productRoutes);       
+app.use('/shoppingcart', cartRoutes);       
+app.use('/purchase', purchaseRoutes);       
 app.use('/user', userRoutes);               
 
-// Configuración del puerto
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));

@@ -4,7 +4,7 @@ import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Muestra el perfil del usuario
+
 router.get('/profile', authMiddleware, async (req, res) => {
   const id_usuario = req.usuario.id;
   const query = 'SELECT nombre, dinero, mail FROM usuario WHERE id = $1';
@@ -17,7 +17,7 @@ router.get('/profile', authMiddleware, async (req, res) => {
   }
 });
 
-// Agrega dinero a la cuenta del usuario
+
 router.post('/agregar/dinero', authMiddleware, async (req, res) => {
   const id = req.usuario.id;
   const dinero = parseFloat(req.body.dinero);
@@ -29,7 +29,7 @@ router.post('/agregar/dinero', authMiddleware, async (req, res) => {
   res.json({ message: 'Dinero agregado exitosamente', nuevoSaldo });
 });
 
-// Muestra el historial de compras del usuario
+
 router.get('/historial', authMiddleware, async (req, res) => {
   const id_usuario = req.usuario.id;
   const query = `
