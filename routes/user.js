@@ -13,7 +13,7 @@ router.get('/profile', authMiddleware, async (req, res) => {
   if (results.length > 0) {
     res.json(results[0]);
   } else {
-    res.status(404).json({ message: 'Usuario no encontrado' });
+    res.status(404).json({ message: 'no se encontro el usuario' });
   }
 });
 
@@ -26,7 +26,7 @@ router.post('/agregar/dinero', authMiddleware, async (req, res) => {
   const nuevoSaldo = dinero + dineroActual;
 
   await sql('UPDATE usuario SET dinero = $1 WHERE id = $2', [nuevoSaldo, id]);
-  res.json({ message: 'Dinero agregado exitosamente', nuevoSaldo });
+  res.json({ message: 'dinero agregado', nuevoSaldo });
 });
 
 

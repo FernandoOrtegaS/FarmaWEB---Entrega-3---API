@@ -21,17 +21,17 @@ router.post('/', authMiddleware, async (req, res) => {
     const dinero_actual = resultado_dinero_usuario[0].dinero || 0;
 
     if (dinero_actual < total_precio) {
-      return res.status(400).json({ message: 'No tienes suficiente dinero para realizar la compra.' });
+      return res.status(400).json({ message: 'No tienes suficiente dinero' });
     }
 
     await sql('UPDATE usuario SET dinero = dinero - $1 WHERE id = $2', [total_precio, id_usuario]);
     await sql('INSERT INTO ventas (id_usuario, cantidad, fecha) VALUES ($1, $2, CURRENT_TIMESTAMP)', [id_usuario, total_precio]);
     await sql('DELETE FROM carrito WHERE id_usuario = $1', [id_usuario]);
 
-    res.json({ message: 'Compra realizada exitosamente' });
+    res.json({ message: 'compra ya realizada' });
   } catch (error) {
-    console.error('Error al realizar la compra:', error);
-    res.status(500).json({ message: 'Error al realizar la compra' });
+    console.error('error al hacer la compra:', error);
+    res.status(500).json({ message: 'error al hacer la compra' });
   }
 });
 

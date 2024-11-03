@@ -11,8 +11,8 @@ router.get('/totalEarned', authMiddleware, isAdminMiddleware, async (req, res) =
     const totalEarned = result[0].total_earned || 0;
     res.json({ totalEarned });
   } catch (error) {
-    console.error('Error obteniendo el total ganado:', error);
-    res.status(500).json({ message: 'Error obteniendo el total ganado' });
+    console.error('no se pudo obtener el total:', error);
+    res.status(500).json({ message: 'no se pudo obtener el total' });
   }
 });
 
@@ -21,10 +21,10 @@ router.post('/products', authMiddleware, isAdminMiddleware, async (req, res) => 
   const { nombre, precio, imagen } = req.body;
   try {
     await sql('INSERT INTO producto(nombre, precio, imagen) VALUES ($1, $2, $3)', [nombre, precio, imagen]);
-    res.json({ message: 'Producto agregado exitosamente' });
+    res.json({ message: 'se agrego el producto' });
   } catch (error) {
     console.error('Error agregando producto:', error);
-    res.status(500).json({ message: 'Error agregando producto' });
+    res.status(500).json({ message: 'Error al agregar el producto' });
   }
 });
 
@@ -34,10 +34,10 @@ router.put('/products/:id', authMiddleware, isAdminMiddleware, async (req, res) 
   const { nombre, precio, imagen } = req.body;
   try {
     await sql('UPDATE producto SET nombre = $1, precio = $2, imagen = $3 WHERE id = $4', [nombre, precio, imagen, id]);
-    res.json({ message: 'Producto modificado exitosamente' });
+    res.json({ message: 'producto editado' });
   } catch (error) {
     console.error('Error modificando producto:', error);
-    res.status(500).json({ message: 'Error modificando producto' });
+    res.status(500).json({ message: 'error al editarlo ' });
   }
 });
 
@@ -46,10 +46,10 @@ router.delete('/products/:id', authMiddleware, isAdminMiddleware, async (req, re
   const id = req.params.id;
   try {
     await sql('DELETE FROM producto WHERE id = $1', [id]);
-    res.json({ message: 'Producto eliminado exitosamente' });
+    res.json({ message: 'se elimino el producto' });
   } catch (error) {
     console.error('Error eliminando producto:', error);
-    res.status(500).json({ message: 'Error eliminando producto' });
+    res.status(500).json({ message: 'no se pudo eliminar' });
   }
 });
 

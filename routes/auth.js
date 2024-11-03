@@ -7,6 +7,9 @@ const router = express.Router();
 const keyword = 'ktal';
 const cookieNameAuth = "jaja";
 
+router.get('/auth', (req, res) => {
+  res.render('auth'); 
+});
 
 router.post('/login', async (req, res) => {
   const { mail, password } = req.body;
@@ -24,9 +27,9 @@ router.post('/login', async (req, res) => {
   if (bcrypt.compareSync(password, hash)) {
     const token = jwt.sign({ id }, keyword, { expiresIn: '5m' });
     res.cookie(cookieNameAuth, token, { maxAge: 5 * 60 * 1000, httpOnly: true });
-    res.json({ message: 'Inicio de sesión exitoso' });
+    res.json({ message: 'se inició sesión' });
   } else {
-    res.status(401).json({ message: 'Usuario o contraseña incorrectos' });
+    res.status(401).json({ message: 'usuario o contraseña incorrectos' });
   }
 });
 
@@ -43,16 +46,16 @@ router.post('/signup', async (req, res) => {
 
     const token = jwt.sign({ id }, keyword, { expiresIn: '45m' });
     res.cookie(cookieNameAuth, token, { maxAge: 45 * 60 * 1000, httpOnly: true });
-    res.json({ message: 'Registro exitoso' });
+    res.json({ message: 'registro exitoso' });
   } catch {
-    res.status(400).json({ message: 'El usuario ya está registrado' });
+    res.status(400).json({ message: 'el usuario ya está registrado' });
   }
 });
 
 
 router.post('/logout', (req, res) => {
   res.cookie(cookieNameAuth, '', { maxAge: 1 });
-  res.json({ message: 'Cierre de sesión exitoso' });
+  res.json({ message: 'se cerró la sesión' });
 });
 
 export default router;
